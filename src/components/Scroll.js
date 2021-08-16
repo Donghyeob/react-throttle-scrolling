@@ -1,14 +1,71 @@
-import React, { useState } from 'react'
-import { scrollDataSet } from '../source/scrollDataSet'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
 
 const Scroll = () => {
-  const totalData = scrollDataSet
+  const [totalData, setTotalData] = useState([])
   const [currentSection, setCurrentSection] = useState(1)
-  const [splitData, setSplitData] = useState(totalData.slice(0, 19))
+  const [splitData, setSplitData] = useState([])
+  const [loading, setLoading] = useState(false)
+  const printData = 20
+  const lastId = currentSection * printData - 1
+
+  const jsonDataCall = async () => {
+    await axios.get('https://jsonplaceholder.typicode.com/comments')
+      .then((res) => {
+        setTotalData(res.data)
+        setSplitData(res.data.slice(0, lastId))
+        setCurrentSection(currentSection + 1)
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+  }
+
+  const currentDataCall = () => {
+    console.log(currentSection)
+    console.log(lastId)
+    console.log(totalData.slice(0, lastId))
+    setSplitData(totalData.slice(0, lastId))
+    setCurrentSection(currentSection + 1)
+  }
+
+  const handleScroll = () => {
+    setLoading(false)
+    const scrollHeight = document.documentElement.scrollHeight
+    const scrollTop = document.documentElement.scrollTop
+    const clientScroll = document.documentElement.clientHeight
+    scrollTop + clientScroll >= scrollHeight && currentDataCall()
+  }
+
+  const throttleScroll = () => {
+    !loading
+      && setLoading(setTimeout(() => {
+        setLoading(false)
+        handleScroll()
+      }, 2000))
+  }
+
+  useEffect(() => {
+    jsonDataCall()
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('scroll', throttleScroll)
+    return () => {
+      window.removeEventListener('scroll', throttleScroll)
+    }
+  }, [currentSection])
 
   return (
     <>
       scroll area!
+      {splitData.map((v, i) => (
+        <div key={i} style={{ marginBottom: '10px' }}>
+          { v.id}
+          { v.body}
+        </div>
+      ))
+      }
     </>
   )
 }
