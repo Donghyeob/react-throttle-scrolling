@@ -6,6 +6,7 @@ const Scroll = () => {
   const [currentSection, setCurrentSection] = useState(1)
   const [splitData, setSplitData] = useState([])
   const [loading, setLoading] = useState(false)
+  const [throttleCount, setThrottleCount] = useState(0)
   const printData = 20
   const lastId = currentSection * printData - 1
 
@@ -22,15 +23,15 @@ const Scroll = () => {
   }
 
   const currentDataCall = () => {
-    console.log(currentSection)
-    console.log(lastId)
-    console.log(totalData.slice(0, lastId))
+    // console.log(currentSection)
+    // console.log(lastId)
+    // console.log(totalData.slice(0, lastId))
     setSplitData(totalData.slice(0, lastId))
     setCurrentSection(currentSection + 1)
   }
 
   const handleScroll = () => {
-    setLoading(false)
+    console.log('handle scroll function')
     const scrollHeight = document.documentElement.scrollHeight
     const scrollTop = document.documentElement.scrollTop
     const clientScroll = document.documentElement.clientHeight
@@ -38,11 +39,15 @@ const Scroll = () => {
   }
 
   const throttleScroll = () => {
-    !loading
-      && setLoading(setTimeout(() => {
+    !loading &&
+      setLoading(setTimeout(() => {
+        console.log('Throttle Count')
+        setThrottleCount(throttleCount + 1)
+        console.log(throttleCount)
         setLoading(false)
         handleScroll()
-      }, 2000))
+      }, 2000)
+      )
   }
 
   useEffect(() => {
@@ -54,7 +59,7 @@ const Scroll = () => {
     return () => {
       window.removeEventListener('scroll', throttleScroll)
     }
-  }, [currentSection])
+  }, [currentSection, loading])
 
   return (
     <>
@@ -66,6 +71,7 @@ const Scroll = () => {
         </div>
       ))
       }
+      {loading && <div>Loading...</div>}
     </>
   )
 }
