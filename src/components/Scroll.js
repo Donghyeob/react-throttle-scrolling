@@ -5,7 +5,7 @@ const Scroll = () => {
   const [totalData, setTotalData] = useState([])
   const [currentSection, setCurrentSection] = useState(1)
   const [splitData, setSplitData] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState()
   const [throttleCount, setThrottleCount] = useState(0)
   const printData = 20
   const lastId = currentSection * printData - 1
@@ -31,7 +31,6 @@ const Scroll = () => {
   }
 
   const handleScroll = () => {
-    console.log('handle scroll function')
     const scrollHeight = document.documentElement.scrollHeight
     const scrollTop = document.documentElement.scrollTop
     const clientScroll = document.documentElement.clientHeight
@@ -44,9 +43,9 @@ const Scroll = () => {
         console.log('Throttle Count')
         setThrottleCount(throttleCount + 1)
         console.log(throttleCount)
-        setLoading(false)
+        setLoading(null)
         handleScroll()
-      }, 2000)
+      }, 1000)
       )
   }
 
